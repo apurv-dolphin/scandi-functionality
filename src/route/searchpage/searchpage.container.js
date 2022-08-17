@@ -1,8 +1,10 @@
 /* eslint-disable max-len */
 import { connect } from 'react-redux';
+import { AddToCartReducer } from 'store/AddToCart/AddToCart.reducer';
 import { categoryAction } from 'store/Savedata/Savedata.action';
 import { SavedataReducer } from 'store/Savedata/Savedata.reducer';
 
+import { addItems } from 'Store/AddToCart/AddToCart.action';
 import { searchAction } from 'Store/Savedata/Savedata.action';
 import { withReducers } from 'Util/DynamicReducer';
 
@@ -28,10 +30,12 @@ export const mapStateToProps = (state) => ({
 export const mapDispatchToProps = (dispatch) => ({
     updateBreadcrumbs: (breadcrumbs) => BreadcrumbsDispatcher.then(({ default: dispatcher }) => dispatcher.update(breadcrumbs, dispatch)),
     categoryListData: (categoryDatas) => dispatch(categoryAction(categoryDatas)),
-    searchIdData: (modelId) => dispatch(searchAction(modelId))
+    searchIdData: (modelId) => dispatch(searchAction(modelId)),
+    addData: (data) => dispatch(addItems(data))
 });
 
 // eslint-disable-next-line @scandipwa/scandipwa-guidelines/always-both-mappings
 export default withReducers({
-    SavedataReducer
+    SavedataReducer,
+    AddToCartReducer
 })(connect(mapStateToProps, mapDispatchToProps)(Searchpage));
