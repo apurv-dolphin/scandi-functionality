@@ -162,6 +162,12 @@ export class SearchpageComponent extends PureComponent {
       this.setState({ modelShow: false });
   };
 
+  handleProduct = (addproduct) => {
+      const { addData } = this.props;
+      addData(addproduct);
+      console.log('__ak add', addproduct);
+  };
+
   handleChange = (e) => {
       localStorage.setItem('sid', JSON.stringify([e.target.value]));
   };
@@ -474,6 +480,7 @@ export class SearchpageComponent extends PureComponent {
                       marginTop: '20px',
                       cursor: 'pointer'
                   } }
+                  onClick={ () => this.handleProduct(singleProduct[0]) }
                 >
                   <h3 style={ { lineHeight: '3' } }>
                     <b>Add to cart</b>

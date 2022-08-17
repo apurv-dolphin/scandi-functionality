@@ -1,6 +1,7 @@
 // import the original getStaticReducers function
 // and rename it to baseGetStaticReducers
 import { getStaticReducers as baseGetStaticReducers } from 'SourceStore/index';
+import AddToCartReducer from 'Store/AddToCart/AddToCart.reducer';
 // import our own reducer
 import SavedataReducer from 'Store/Savedata/Savedata.reducer';
 
@@ -12,7 +13,8 @@ export const getStaticReducers = () => ({
     ...baseGetStaticReducers(),
 
     // ...except we also add our own reducer to the mix
-    SavedataReducer
+    SavedataReducer,
+    AddToCartReducer
 });
 
 // nothing new here, just copying the function from the base theme
