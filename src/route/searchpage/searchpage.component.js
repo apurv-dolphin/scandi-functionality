@@ -493,7 +493,7 @@ export class SearchpageComponent extends PureComponent {
       return (
       <div className="spagemoreinfo-block-wrapper">
         <div className="spagemoreinfo-block">
-          <h4 className="spagemoreinfo-title">Product Deatails Information</h4>
+          <h4 className="spagemoreinfo-title">Product Deatails Information of cars</h4>
           <button className="spagemoreinfo-actions">
             More information
             { ' >>' }
