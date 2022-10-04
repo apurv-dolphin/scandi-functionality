@@ -12,6 +12,21 @@ export const AddToCartReducer = (state = getInitialState(), action) => {
     switch (action.type) {
     case ADD_TO_CART:
         // const { additem } = action;
+        const item = state.cart.find(
+            (product) => product.sku === action.payload.sku,
+        );
+
+        if (item) {
+            return {
+                ...state,
+                cart: state.cart.map((item) => (item.sku === action.payload.sku
+                    ? {
+                        ...item,
+                        no_of_conut: item.no_of_conut + 1
+                    }
+                    : item))
+            };
+        }
 
         return {
             ...state,
