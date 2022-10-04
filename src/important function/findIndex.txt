@@ -1,0 +1,29 @@
+
+   if (cartData.length > 0) {
+       const index = cartData.findIndex((data) => data.sku === sku1);
+       if (index !== -1) {
+           cartData.filter((e) => {
+               if (e.sku === sku1) {
+                   cartData[index].qty = quantity1;
+                   cartData[index].action = qtyType;
+               }
+           });
+       } else {
+           const appendData = {
+               sku: sku1,
+               qty: quantity1,
+               action: qtyType
+           };
+
+           cartData.push(appendData);
+       }
+   } else {
+       const appendData = {
+           sku: sku1,
+           qty: quantity1,
+           action: qtyType
+       };
+
+       cartData.push(appendData);
+   }
+   this.setState({ cart: cartData });

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-deprecated */
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable array-callback-return */
@@ -18,10 +19,7 @@ import {
 } from 'react-bootstrap';
 import { AiOutlineClose } from 'react-icons/ai';
 
-import { categoryListDisplay, searchIdApi } from 'Component/graphql/apicall';
-import Link from 'Component/Link';
-import { CART_URL } from 'Route/CartPage/CartPage.config';
-import { scrollToTop } from 'Util/Browser';
+import { categoryListDisplay } from 'Component/graphql/apicall';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './searchpage.style';
@@ -38,31 +36,46 @@ export class SearchpageComponent extends PureComponent {
   state = {
       productData: [],
       singleProduct: [],
+      searchId: '',
+      modelId: '',
       showContent: false,
       modelShow: false,
       showCart: false,
-      searchId: JSON.parse(localStorage.getItem('sid')),
       page: 1,
       perPage: 20
   };
 
   async componentDidMount() {
       const { searchId } = this.state;
+      // localStorage.setItem('sid', JSON.stringify(searchId));
+
       // eslint-disable-next-line react/prop-types
-      const { searchIdData, categoryListData } = this.props;
+      const { categoryListData } = this.props;
 
       categoryListDisplay(categoryListData);
-      searchIdApi(searchId, searchIdData);
+      const searchData = localStorage.getItem('sid');
+
+      this.setState({ searchId: JSON.parse(searchData) });
 
       if (searchId !== null) {
           this.setState({ showContent: true });
       }
   }
 
+  componentDidUpdate() {
+      const { searchId } = this.state;
+
+      localStorage.setItem('sid', JSON.stringify(searchId));
+      if (searchId.length !== 0) {
+          this.setState({ showContent: true });
+      }
+  }
+
   // eslint-disable-next-line consistent-return
   showProduct = (id) => {
-      // eslint-disable-next-line react/prop-types
-      const { modelId } = this.props;
+      const { modelId } = this.state;
+
+      console.log('__model', modelId);
 
       const categoryProductData = `{
         products(filter: { category_id: {eq:"${id}"}, model_id: { eq: "${modelId}" } },pageSize: 30) {
@@ -83,6 +96,8 @@ export class SearchpageComponent extends PureComponent {
             }
           }
     }`;
+
+      console.log('__categoryProductData', categoryProductData);
 
       fetch('/graphql', {
           method: 'POST',
@@ -165,22 +180,91 @@ export class SearchpageComponent extends PureComponent {
   handleProduct = (addproduct) => {
       const { addData } = this.props;
       addData(addproduct);
-      console.log('__ak add', addproduct);
   };
 
   handleChange = (e) => {
-      localStorage.setItem('sid', JSON.stringify([e.target.value]));
+      this.setState({ searchId: e.target.value });
+      this.setState({ modelId: '' });
   };
 
   handleSubmit = () => {
       const { searchId } = this.state;
+
+      const carPlate = `{
+        GetCar(id:"${searchId}"){
+          carlinkment
+          RegNr
+          modell_id
+          Fordons_ar
+          Chassinummer
+          Registreringsdatum
+          Tillverkningsmanad
+          C_merke
+          C_typ
+          C_modell
+          C_kw
+          C_hk
+          C_slagvolym
+          C_lit
+          C_hjuldrift
+          C_bransle
+          C_vaxellada
+          C_kaross
+          C_motorkod
+          C_chassi 
+          C_fran_ar 
+          C_till_ar 
+          Tjanstevikt 
+          Totalvikt 
+          WHEELID 
+          Min_Tum 
+          Max_Tum 
+          BULTCIRKEL 
+          BULTDIMETER 
+          NAVHAL 
+          ET 
+          dack_dim_fram 
+          dack_dim_bak 
+          Bredd_Fram 
+          Bredd_Bak 
+          ET_fram_tollerans 
+          ET_bak_tollerans 
+          DK_Anmarkning 
+          car_make
+        }
+      }`;
+
+      fetch('/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: carPlate })
+      })
+          .then(
+              /** @namespace myFirstApp/Route/Searchpage/Component/SearchpageComponent/then/catch/then/then/fetch/then */
+              (response) => response.json()
+          )
+          .then(
+              /** @namespace myFirstApp/Route/Searchpage/Component/SearchpageComponent/then/catch/then/then */
+              (data) => {
+                  this.setState({ modelId: data.data.GetCar.modell_id });
+                  console.log('__data', data.data.GetCar.modell_id);
+              }
+          )
+          .catch(
+              /** @namespace myFirstApp/Route/Searchpage/Component/SearchpageComponent/then/catch */
+              (error) => console.log('error', error)
+          );
+
       if (searchId !== null) {
           this.setState({ showContent: true });
+      } else {
+          this.setState({ productData: [] });
       }
   };
 
   renderSearchBar() {
       const { searchId } = this.state;
+      console.log('__prev', searchId);
       return (
       <div className="searchbar">
         <Form className="d-flex">
@@ -190,7 +274,7 @@ export class SearchpageComponent extends PureComponent {
             className="me-2"
             aria-label="Search"
             defaultValue={ searchId }
-            onChange={ this.handleChange }
+            onChange={ (e) => this.handleChange(e) }
           />
           <Button
             className="searchboxBtn"
@@ -467,9 +551,9 @@ export class SearchpageComponent extends PureComponent {
                   } }
                 >
                   <h3 style={ { lineHeight: '3' } }>
-                    <Link to={ CART_URL } onClick={ scrollToTop }>
-                      <b style={ { color: '#fff', textAlign: 'center' } }> Produce to Payment</b>
-                    </Link>
+                      <b style={ { color: '#fff', textAlign: 'center' } }>
+                         Place the Order
+                      </b>
                   </h3>
                 </div>
                 <div
@@ -500,7 +584,9 @@ export class SearchpageComponent extends PureComponent {
       return (
       <div className="spagemoreinfo-block-wrapper">
         <div className="spagemoreinfo-block">
-          <h4 className="spagemoreinfo-title">Product Deatails Information of cars</h4>
+          <h4 className="spagemoreinfo-title">
+            Product Deatails Information of cars
+          </h4>
           <button className="spagemoreinfo-actions">
             More information
             { ' >>' }
@@ -561,12 +647,10 @@ export class SearchpageComponent extends PureComponent {
                   <div className="spage-sidebar">
                     { this.renderDisplayCategory() }
                   </div>
-                  <div className="spage-product-content">
+                    <div className="spage-product-content">
                     { this.renderData() }
-                  </div>
-                  <div>
-                    { this.renderCart() }
-                  </div>
+                    </div>
+                    <div>{ this.renderCart() }</div>
                 </div>
                 <Row>{ this.renderPegination() }</Row>
                 </>
