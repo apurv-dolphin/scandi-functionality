@@ -1,6 +1,6 @@
 
    if (cartData.length > 0) {
-       const index = cartData.findIndex((data) => data.sku === sku1);
+       const index = cartData.findIndex((data) => data.sku === sku1);  // match a uniqe value.
        if (index !== -1) {
            cartData.filter((e) => {
                if (e.sku === sku1) {
